@@ -2,3 +2,4 @@
 
 shopt -s nocaseglob
 
+echo "WorkingFrom Remote"
