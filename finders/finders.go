@@ -9,7 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"star-seeker/models"
+	"repo-radar/models"
 	"strings"
 	"sync"
 	"time"
@@ -24,7 +24,7 @@ func FindRepos(keywords []string) {
 	site := "github.com"
 
 	result, _ := googlesearch.Search(ctx, name+" site:"+site)
-	fmt.Println("Google Search Ended...Total... ", len(result))
+	//fmt.Println("Google Search Ended...Total... ", len(result))
 	repoUrls := processSearchResult(&result)
 	prepareRow(repoUrls)
 
@@ -36,13 +36,13 @@ func processSearchResult(result *[]googlesearch.Result) []string {
 	uniqueUrls := make(map[string]bool)
 	for i := 0; i < len(*result); i++ {
 		url := (*result)[i].URL
-		if uniqueUrls[url] {
+		repoUserSuffix := trimRepoUser(url[19:len(url)])
+		if uniqueUrls[repoUserSuffix] {
 			continue
 		}
-		repoUserSuffix := trimRepoUser(url[19:len(url)])
 		newApiUrl := "https://api.github.com/repos/" + repoUserSuffix
 		repoUrls = append(repoUrls, newApiUrl)
-		uniqueUrls[url] = true
+		uniqueUrls[repoUserSuffix] = true
 	}
 	return repoUrls
 }
@@ -53,7 +53,7 @@ func prepareRow(repoUrls []string) {
 	table.SetAlignment(tablewriter.ALIGN_CENTER)
 	//table.SetAutoFormatHeaders(false)
 	//table.SetAutoWrapText(false)
-	fmt.Println("Search Started, Preparing Table")
+	//fmt.Println("Search Started, Preparing Table")
 	var wg sync.WaitGroup
 	for _, newApiUrl := range repoUrls {
 		wg.Add(1)
@@ -66,7 +66,7 @@ func prepareRow(repoUrls []string) {
 	}
 	wg.Wait()
 
-	fmt.Println("Search Fininshed, Rendering Table")
+	//fmt.Println("Search Fininshed, Rendering Table")
 	table.Render()
 }
 
@@ -77,9 +77,9 @@ func GetRepoDetails(newApiUrl string, table *tablewriter.Table) {
 		return
 	}
 	body, err := io.ReadAll(resp.Body)
-	//if resp.StatusCode != 200 {
-	//	fmt.Println(resp.StatusCode, "---------------GotUnexpectedResult-------------------", resp)
-	//}
+	if resp.StatusCode != 200 {
+		//fmt.Println(resp.StatusCode, "---------------GotUnexpectedResult-------------------", resp)
+	}
 	if resp.StatusCode == 200 {
 		var respRepo models.RepoDetails
 		err = json.Unmarshal(body, &respRepo)

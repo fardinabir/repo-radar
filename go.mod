@@ -1,4 +1,4 @@
-module star-seeker
+module repo-radar
 
 go 1.19
 

@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"star-seeker/finders"
+	"repo-radar/finders"
 )
 
 // findCmd represents the find command
@@ -18,7 +18,7 @@ var findCmd = &cobra.Command{
 }
 
 func runSearch(cmd *cobra.Command, args []string) {
-	fmt.Println(args)
+	fmt.Println("Searching for : ", args)
 	finders.FindRepos(args)
 }
 
@@ -35,5 +35,4 @@ func init() {
 	// is called directly, e.g.:
 	// findCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	println("Init of find...............")
 }

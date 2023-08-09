@@ -1,5 +1,31 @@
 #!/bin/bash
-
 shopt -s nocaseglob
+OUT_PATH=GOPATH
+echo "Installing Repo Radar."
+if ! command -v go &>/dev/null; then
+    echo "Missing Golang. Please install or configure appropriately."
+    exit 1
+fi
+if ! command -v git &>/dev/null; then
+    echo "Missing git. Please install git to proceed."
+    exit 1
+fi
+if [ -d "./repo-radar/" ]; then
+  echo "Files are present at local dir"
+else
+  if git clone "https://github.com/fardinabir/repo-radar.git"; then
+      echo "Clone from git successful."
+  else
+      echo "Git cloning failed."
+  fi
+fi
 
-echo "WorkingFrom Remote"
+cd repo-radar
+if go build -o "${OUT_PATH}/bin/reporadar" main.go; then
+    echo "Installation successful."
+    cd ../
+    [ -d "./repo-radar/" ] && rm -rf repo-radar
+else
+    echo "Installation failed."
+    [ -d "./repo-radar/" ] && rm -rf repo-radar
+fi
